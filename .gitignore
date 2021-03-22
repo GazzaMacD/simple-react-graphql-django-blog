@@ -1,7 +1,18 @@
-node_modules
+# Byte-compiled / optimized / DLL files
+__pycache__
+*.py[cod]
+__pycache__/
+node_modules/
 venv_rgqldj_blog
 db.sqlite3
-__pycache__
 *.pyc
-*.py[cod]
-settings.cpython-38.pyc
+*.pyc
+*.pyo
+.installed.cfg
+bin
+develop-eggs
+dist
+downloads
+eggs
+parts
+src/*.egg-info
