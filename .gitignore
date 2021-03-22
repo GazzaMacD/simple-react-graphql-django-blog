@@ -1,3 +1,7 @@
 node_modules
 venv_rgqldj_blog
 db.sqlite3
+__pycache__
+*.pyc
+*.py[cod]
+settings.cpython-38.pyc
