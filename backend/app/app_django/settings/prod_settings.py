@@ -1,7 +1,7 @@
 from .base_settings import *
 
 # set django settings module environ variable with the following
-# export DJANGO_SETTINGS_MODULE=app.settings.prod_settings 
+# export DJANGO_SETTINGS_MODULE=app_django.settings.prod_settings 
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # set key here

@@ -1,7 +1,7 @@
 from .base_settings import *
 
 # set django settings module environ variable with the following
-# export DJANGO_SETTINGS_MODULE=app.settings.stag_settings 
+# export DJANGO_SETTINGS_MODULE=app_django.settings.stag_settings 
 
 # SECURITY WARNING: keep the secret key used in staging secret!
 # set key here
