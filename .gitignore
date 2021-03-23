@@ -17,3 +17,4 @@ eggs
 parts
 src/*.egg-info
 .vscode/
+backend_project_files/
