@@ -21,6 +21,10 @@ from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
 from .schema import schema
 
+admin.site.site_header = 'Site Staff Admin'
+admin.site.site_title = 'Simple Blog App'
+admin.site.index_title = 'Administration Home'
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(

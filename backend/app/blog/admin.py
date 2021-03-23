@@ -3,8 +3,36 @@ from .models import Post, Category
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    pass
+    readonly_fields = ('slug', 'uuid',)
+    fieldsets = (
+        (
+            "Post Details", {
+            "description": (
+                "Create blog posts here"
+            ),
+            "fields": (
+                "title",
+                ("slug", "uuid"),
+                "content",
+                "category"
+                ),
+            }
+        ),
+    )# end of fieldset
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    pass
+    readonly_fields = ('slug', 'uuid',)
+    fieldsets = (
+        (
+            "Category Details", {
+            "description": (
+                "Create blog categories here"
+            ),
+            "fields": (
+                "name",
+                ("slug", "uuid")
+                ),
+            }
+        ),
+    )# end of fieldset
