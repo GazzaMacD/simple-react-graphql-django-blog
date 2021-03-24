@@ -1,26 +1,61 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+//Types
+import { PostType } from "./types/BlogTypes";
 
-function App() {
+const getPosts = async (): Promise<PostType[]> => {
+  const response = await fetch("http://127.0.0.1:8000/graphql/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      query: `
+      query {
+        allPosts {
+          uuid
+          title
+          slug
+          content
+          category {
+            uuid
+            name
+            slug
+          }
+        }
+      }`,
+    }),
+  });
+  const result = await response.json();
+  return result;
+};
+const App = () => {
+  const [posts, setPosts] = useState<PostType[] | []>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const result = getPosts();
+    result
+      .then((resp: any) => {
+        const allPosts: any = resp.data.allPosts;
+        setPosts(allPosts);
+        setIsLoading(false);
+      })
+      .catch((error) => console.log(error));
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>My Blog</h1>
+      {isLoading && <p>Wait I'm Loading comments for you</p>}
+      {
+        posts.map((prod: PostType, i: number) => {
+          return (
+            <div key={i}>
+              <a href={`blog/${prod.slug}/`}>{prod.title}</a>
+            </div>
+          );
+        }) // end map
+      }
     </div>
   );
-}
+};
 
 export default App;
