@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 //Types
 import { PostType } from "./types/BlogTypes";
+type getPostsData = Array<PostType>;
+type JSONResponse = {
+  data?: {
+    allPosts: Array<PostType>;
+  };
+  errors?: Array<{ message: string }>;
+};
 
-const getPosts = async (): Promise<PostType[]> => {
-  const response = await fetch("http://127.0.0.1:8000/graphql/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      query: `
+const getPosts = async (): Promise<getPostsData | undefined> => {
+  const graphQLURL = "http://127.0.0.1:8000/graphql/";
+  const allPostsQuery = `
       query {
         allPosts {
           uuid
@@ -20,26 +24,42 @@ const getPosts = async (): Promise<PostType[]> => {
             slug
           }
         }
-      }`,
-    }),
+      }`;
+
+  const response = await fetch(graphQLURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query: allPostsQuery }),
   });
-  const result = await response.json();
-  return result;
-};
+  //set the type for JSON response
+  const { data, errors }: JSONResponse = await response.json();
+  if (response.ok) {
+    const posts = data?.allPosts;
+    return posts;
+  } else {
+    // handle graphql errors
+    const error = new Error(
+      errors?.map((e) => e.message).join("\n") ?? "unknown"
+    );
+    return Promise.reject(error);
+  }
+}; // end getPosts
+
 const App = () => {
-  const [posts, setPosts] = useState<PostType[] | []>([]);
+  const [posts, setPosts] = useState<Array<PostType> | []>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const result = getPosts();
-    result
+    const response = getPosts();
+    response
       .then((resp: any) => {
-        const allPosts: any = resp.data.allPosts;
-        setPosts(allPosts);
+        setPosts(resp);
         setIsLoading(false);
       })
-      .catch((error) => console.log(error));
-  }, []);
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []); // end useEffect
 
   return (
     <div className="App">
