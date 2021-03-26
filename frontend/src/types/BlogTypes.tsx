@@ -10,3 +10,8 @@ export type PostType = {
   content: string;
   category: Category;
 };
+
+export type AllPostsType = {
+  title: string;
+  slug: string;
+};

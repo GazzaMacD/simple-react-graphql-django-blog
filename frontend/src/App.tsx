@@ -8,14 +8,27 @@ import {
   useParams,
 } from "react-router-dom";
 //Types
-import { PostType } from "./types/BlogTypes";
-type getPostsData = Array<PostType>;
-type JSONResponse = {
+import { PostType, AllPostsType } from "./types/BlogTypes";
+
+type getPostsData = Array<AllPostsType>; // type for Posts
+
+type JSONPostsResponse = {
   data?: {
     allPosts: Array<PostType>;
   };
   errors?: Array<{ message: string }>;
 };
+interface ParamTypes {
+  slug: string;
+}
+
+type JSONOnePostResponse = {
+  data?: {
+    postBySlug: PostType;
+  };
+  errors?: Array<{ message: string }>;
+};
+
 interface ParamTypes {
   slug: string;
 }
@@ -32,11 +45,30 @@ const Home = () => {
 
 const PostDetail = () => {
   let { slug } = useParams<ParamTypes>();
+  const [post, setPost] = useState<PostType | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  useEffect(() => {
+    const response = getOnePost(slug);
+    response
+      .then((resp: any) => {
+        setPost(resp);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [slug]); // end useEffect
   return (
     <div>
-      <h1>I am a detail page </h1>
-      <p> {slug} </p>
+      <h1>Detail Page</h1>
+      {isLoading && <p>Wait I'm Loading comments for you</p>}
+      {post && (
+        <div>
+          <h1>{post.title}</h1>
+          <div>{post.content}</div>
+        </div>
+      )}
     </div>
   );
 };
@@ -80,6 +112,35 @@ const getPosts = async (): Promise<getPostsData | undefined> => {
   const allPostsQuery = `
       query {
         allPosts {
+          title
+          slug
+        }
+      }`;
+
+  const response = await fetch(graphQLURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query: allPostsQuery }),
+  });
+  //set the type for JSON response
+  const { data, errors }: JSONPostsResponse = await response.json();
+  if (response.ok) {
+    const posts = data?.allPosts;
+    return posts;
+  } else {
+    // handle graphql errors
+    const error = new Error(
+      errors?.map((e) => e.message).join("\n") ?? "unknown"
+    );
+    return Promise.reject(error);
+  }
+}; // end getPosts
+
+const getOnePost = async (slug: string): Promise<PostType | undefined> => {
+  const graphQLURL = "http://127.0.0.1:8000/graphql/";
+  const onePostQuery = `
+      query {
+        postBySlug(slug: "${slug}") {
           uuid
           title
           slug
@@ -95,13 +156,13 @@ const getPosts = async (): Promise<getPostsData | undefined> => {
   const response = await fetch(graphQLURL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query: allPostsQuery }),
+    body: JSON.stringify({ query: onePostQuery }),
   });
+
   //set the type for JSON response
-  const { data, errors }: JSONResponse = await response.json();
+  const { data, errors }: JSONOnePostResponse = await response.json();
   if (response.ok) {
-    const posts = data?.allPosts;
-    return posts;
+    return data?.postBySlug;
   } else {
     // handle graphql errors
     const error = new Error(
@@ -109,7 +170,7 @@ const getPosts = async (): Promise<getPostsData | undefined> => {
     );
     return Promise.reject(error);
   }
-}; // end getPosts
+}; // end getOnePost
 
 // App export
 const App = () => {
