@@ -1,0 +1,31 @@
+# create new post with category uuid
+mutation {
+  createPost(
+    title: "test programming"
+    content: " blah blah"
+    categoryUuid: "91addaf8-7e28-4d2a-828f-ea66bb8c91d6"
+  ) {
+    # return these field on post relating to PostType in schema
+    # with possible ields = ("uuid", "title", "slug", "content", "category")
+    post {
+      title
+      content
+      category {
+        name
+      }
+    }
+  }
+}
+
+# get all Posts  with following fields (exclude post content)
+query {
+  allPosts {
+    title
+    uuid
+    slug
+    category {
+      uuid
+      name
+    }
+  }
+}
