@@ -29,3 +29,22 @@ query {
     }
   }
 }
+
+# get category  with uuid
+query {
+categoryByUuid(uuid: "91addaf8-7e28-4d2a-828f-ea66bb8c91d6") {
+  name
+}
+}
+# get post  with uuid
+query {
+postByUuid(uuid: "91addaf8-7e28-4d2a-828f-ea66bb8c91d6") {
+    title
+    content
+    slug
+    category {
+        uuid
+        name
+    }
+}
+}
