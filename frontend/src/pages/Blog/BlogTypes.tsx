@@ -1,4 +1,4 @@
-interface Category {
+export interface CategoryType {
   uuid: string;
   name: string;
   slug: string;
@@ -8,7 +8,7 @@ export type PostType = {
   title: string;
   slug: string;
   content: string;
-  category: Category;
+  category: CategoryType;
 };
 
 export type AllPostsType = {
