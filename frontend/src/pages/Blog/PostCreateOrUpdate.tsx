@@ -77,6 +77,7 @@ const PostCreateOrUpdate: React.FC = () => {
             content: contentInputRef.current!.value,
             categoryUuid: categoryInputRef.current!.value,
         };
+        // if else start here -->
         const response = sendNewPost(postData);
         console.log("Response Promise", response);
         response

@@ -90,6 +90,33 @@ class Query(graphene.ObjectType):
 Mutations
 """
 # Post mutations ==================
+class UpdatePost(graphene.Mutation):
+    class Arguments:
+        slug = graphene.String(required=True)
+        title = graphene.String()
+        content = graphene.String()
+        category_uuid = graphene.String()
+
+    updated_post = graphene.Field(PostType)
+
+    def mutate(self, info, slug, title=None, content=None, category_uuid=None):
+        category_object = None
+        if category_uuid:
+            category_object = Category.objects.get(uuid=category_uuid)
+        post_to_update = Post.objects.get(slug=slug)
+        # update values
+        post_to_update.title = title or post_to_update.title
+        post_to_update.content = content or post_to_update.content
+        post_to_update.category = category_object or post_to_update.category
+        #save the updated post
+        post_to_update.save()
+
+        # Return an instance of the mutation
+        return UpdatePost(
+            updated_post=post_to_update
+        )
+
+
 class CreatePost(graphene.Mutation):
     class Arguments:
         title = graphene.String(required=True)
@@ -115,6 +142,7 @@ class CreatePost(graphene.Mutation):
 # Category mutations ==================
 class Mutation(graphene.ObjectType):
     create_post = CreatePost.Field()
+    update_post = UpdatePost.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
