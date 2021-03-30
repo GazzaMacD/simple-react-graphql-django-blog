@@ -1,12 +1,13 @@
 //types
-import { CategoryType, PostType, AllPostsType } from "./BlogTypes";
+import {
+    CategoryType,
+    PostType,
+    AllPostsType,
+    NewSubmittedPost,
+    UpdateSubmittedPost,
+} from "./BlogTypes";
 type getCategoriesData = Array<CategoryType>;
 type getPostsData = Array<AllPostsType>;
-type SubmittedPost = {
-    title: string;
-    content: string;
-    categoryUuid: string;
-};
 
 /*
  * Query Type Queries
@@ -131,16 +132,16 @@ const getCategories = async (): Promise<getCategoriesData | undefined> => {
  * Mutation Type Queries
  */
 const sendNewPost = async (
-    postData: SubmittedPost
+    postData: NewSubmittedPost
 ): Promise<AllPostsType | undefined> => {
     const graphQLURL = "http://127.0.0.1:8000/graphql/";
     const newPostMutation = `
             mutation {
-            createPost(
-                title: "${postData.title}", 
-                content: "${postData.content}", 
-                categoryUuid: "${postData.categoryUuid}")
-                {
+                createPost(
+                    title: "${postData.title}", 
+                    content: "${postData.content}", 
+                    categoryUuid: "${postData.categoryUuid}"
+                ) {
                 post {
                     title
                     slug 
@@ -176,4 +177,57 @@ const sendNewPost = async (
     }
 }; // end sendNew Post
 
-export { sendNewPost, getCategories, getPosts, getOnePost };
+const updatePost = async (
+    postData: UpdateSubmittedPost
+): Promise<PostType | undefined> => {
+    const graphQLURL = "http://127.0.0.1:8000/graphql/";
+    const updatePostMutation = `
+            mutation {
+                updatePost(
+                    slug: "${postData.slug}",
+                    title: "${postData.title}", 
+                    content: "${postData.content}", 
+                    categoryUuid: "${postData.categoryUuid}"
+                ) {
+                updatedPost {
+                    title
+                    slug 
+                    uuid
+                    content
+                    category {
+                        uuid
+                        name
+                    }
+                }
+            }
+        }
+        `;
+    const response = await fetch(graphQLURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: updatePostMutation }),
+    });
+
+    type JSONResponse = {
+        data?: {
+            updatePost?: {
+                updatedPost?: PostType;
+            };
+        };
+        errors?: Array<{ message: string }>;
+    };
+
+    const { data, errors }: JSONResponse = await response.json();
+    if (response.ok) {
+        const updatedPost = data?.updatePost?.updatedPost;
+        return updatedPost;
+    } else {
+        // handle graphql errors
+        const error = new Error(
+            errors?.map((e) => e.message).join("\n") ?? "unknown"
+        );
+        return Promise.reject(error);
+    }
+}; // end sendNew Post
+
+export { sendNewPost, getCategories, getPosts, getOnePost, updatePost };

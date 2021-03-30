@@ -4,9 +4,16 @@ import {
     getCategories,
     getPosts,
     getOnePost,
+    updatePost,
 } from "./BlogAPIServices";
 //types
-import { CategoryType, PostType } from "./BlogTypes";
+import {
+    CategoryType,
+    AllPostsType,
+    PostType,
+    NewSubmittedPost,
+    UpdateSubmittedPost,
+} from "./BlogTypes";
 
 const PostCreateOrUpdate: React.FC = () => {
     const titleInputRef = useRef<HTMLInputElement>(null);
@@ -14,11 +21,12 @@ const PostCreateOrUpdate: React.FC = () => {
     const categoryInputRef = useRef<HTMLSelectElement>(null);
     // state
     const [categories, setCategories] = useState<Array<CategoryType> | []>([]);
-    const [posts, setPosts] = useState<Array<PostType> | []>([]);
+    const [posts, setPosts] = useState<Array<AllPostsType> | []>([]);
     const [postToUpdate, setPostToUpdate] = useState<PostType | undefined>(
         undefined
     );
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [userMessage, setUserMessage] = useState<string>("");
 
     let categoriesList =
         categories.length > 0 &&
@@ -49,58 +57,104 @@ const PostCreateOrUpdate: React.FC = () => {
                 console.error(err);
             });
     }, []); // end useEffect <-- empty array means called once on render
-
+    const handleNewPost = () => {
+        titleInputRef.current!.value = "";
+        contentInputRef.current!.value = "";
+        categoryInputRef.current!.value = "";
+        setPostToUpdate(undefined);
+    };
     const handleUpdate = async (slug: string) => {
         console.log("slug passed", slug);
         // get the post to be updated with api call
         try {
             const postResponse: PostType | undefined = await getOnePost(slug);
+            // at present only caching one post but should probably cache all
             setPostToUpdate(postResponse);
-            console.log(postToUpdate);
-            if (postToUpdate) {
-                titleInputRef.current!.value = postToUpdate.title;
-                contentInputRef.current!.value = postToUpdate.content;
-                categoryInputRef.current!.value = postToUpdate.category.uuid;
+            if (postResponse) {
+                titleInputRef.current!.value = postResponse.title;
+                contentInputRef.current!.value = postResponse.content;
+                categoryInputRef.current!.value = postResponse.category.uuid;
             }
         } catch (error) {
             console.log(error);
         }
-        // makd a state of current post
-        // update post boolean as well set to true
-        // load post into form
     };
 
-    const submitHandler = (event: React.FormEvent) => {
+    const submitHandler = async (event: React.FormEvent) => {
         event.preventDefault();
-        const postData = {
-            title: titleInputRef.current!.value,
-            content: contentInputRef.current!.value,
-            categoryUuid: categoryInputRef.current!.value,
-        };
-        // if else start here -->
-        const response = sendNewPost(postData);
-        console.log("Response Promise", response);
-        response
-            .then((resp: any) => {
+        // check if it is update or new post
+        if (postToUpdate) {
+            // post update
+            const updatePostData: UpdateSubmittedPost = {
+                slug: postToUpdate.slug,
+                title: titleInputRef.current!.value,
+                content: contentInputRef.current!.value,
+                categoryUuid: categoryInputRef.current!.value,
+            };
+
+            try {
+                const response = await updatePost(updatePostData);
+                setPostToUpdate(response);
+                setUserMessage("updated!");
+                setTimeout(() => {
+                    setUserMessage("");
+                }, 1000);
+                const postsResponse = await getPosts();
+                if (postsResponse) {
+                    setPosts(postsResponse);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        } else {
+            // new post
+            const newPostData: NewSubmittedPost = {
+                title: titleInputRef.current!.value,
+                content: contentInputRef.current!.value,
+                categoryUuid: categoryInputRef.current!.value,
+            };
+            try {
+                const response = await sendNewPost(newPostData);
+                // set flash message to user
+                setUserMessage("New Post Created!");
+                setTimeout(() => {
+                    setUserMessage("");
+                }, 1000);
                 // set form fields to empty
                 titleInputRef.current!.value = "";
                 contentInputRef.current!.value = "";
                 categoryInputRef.current!.value = "";
-                // copy posts array, add new post and update posts
                 const updatedPostsArray = posts.slice();
-                updatedPostsArray.push(resp);
-                setPosts(updatedPostsArray);
-            })
-            .catch((err) => {
-                console.error(err);
-            });
+                if (response) {
+                    updatedPostsArray.push(response);
+                    setPosts(updatedPostsArray);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        } //end else for postToUpdate
     };
+
+    let formHeading = (
+        <div>
+            <h1>Create Post</h1>
+        </div>
+    );
+    if (postToUpdate) {
+        formHeading = (
+            <div>
+                <h1>Update Post</h1>
+                <button onClick={handleNewPost}>New Post</button>
+            </div>
+        );
+    }
 
     return (
         <div>
             <section>
-                <h1>Create or Update Post</h1>
+                {formHeading}
                 <form onSubmit={submitHandler}>
+                    <div>{userMessage && <p>{userMessage}</p>}</div>
                     <div>
                         <label htmlFor="title">Title</label>
                         <input id="title" type="text" ref={titleInputRef} />
@@ -135,7 +189,7 @@ const PostCreateOrUpdate: React.FC = () => {
                 {isLoading && <p>Wait I'm Loading comments for you</p>}
                 {
                     !isLoading &&
-                        posts.map((prod: PostType, i: number) => {
+                        posts.map((prod: AllPostsType, i: number) => {
                             return (
                                 <div key={i}>
                                     <a href={`/blog/${prod.slug}/`}>
