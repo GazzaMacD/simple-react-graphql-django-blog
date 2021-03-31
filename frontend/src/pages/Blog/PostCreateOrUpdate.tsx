@@ -57,14 +57,16 @@ const PostCreateOrUpdate: React.FC = () => {
                 console.error(err);
             });
     }, []); // end useEffect <-- empty array means called once on render
+
+    /* Handlers =============== */
     const handleNewPost = () => {
         titleInputRef.current!.value = "";
         contentInputRef.current!.value = "";
         categoryInputRef.current!.value = "";
         setPostToUpdate(undefined);
     };
+
     const handleUpdate = async (slug: string) => {
-        console.log("slug passed", slug);
         // get the post to be updated with api call
         try {
             const postResponse: PostType | undefined = await getOnePost(slug);
@@ -78,6 +80,10 @@ const PostCreateOrUpdate: React.FC = () => {
         } catch (error) {
             console.log(error);
         }
+    };
+
+    const handlePostDelete = async (slug: string) => {
+        console.log("slug passed", slug);
     };
 
     const submitHandler = async (event: React.FormEvent) => {
@@ -134,7 +140,6 @@ const PostCreateOrUpdate: React.FC = () => {
             }
         } //end else for postToUpdate
     };
-
     let formHeading = (
         <div>
             <h1>Create Post</h1>
@@ -148,7 +153,7 @@ const PostCreateOrUpdate: React.FC = () => {
             </div>
         );
     }
-
+    /* Returned jsx =================================== */
     return (
         <div>
             <section>

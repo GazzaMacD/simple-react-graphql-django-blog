@@ -102,8 +102,14 @@ class UpdatePost(graphene.Mutation):
     def mutate(self, info, slug, title=None, content=None, category_uuid=None):
         category_object = None
         if category_uuid:
-            category_object = Category.objects.get(uuid=category_uuid)
-        post_to_update = Post.objects.get(slug=slug)
+            try: 
+                category_object = Category.objects.get(uuid=category_uuid)
+            except Category.DoesNotExist:
+                return "Category does not exist"
+        try:
+            post_to_update = Post.objects.get(slug=slug)
+        except Post.DoesNotExist: 
+            return None
         # update values
         post_to_update.title = title or post_to_update.title
         post_to_update.content = content or post_to_update.content
@@ -138,11 +144,32 @@ class CreatePost(graphene.Mutation):
             post=created_post
         )
 
+class DeletePost(graphene.Mutation):
+    class Arguments:
+        slug = graphene.String(required=True)
+
+    #returned
+    ok = graphene.Boolean()
+
+
+    def mutate(self, info, slug):
+        try:
+            post_to_delete = Post.objects.get(slug=slug)
+        except Post.DoesNotExist: 
+            return DeletePost(
+                ok=False
+            )
+        #  delete object 
+        post_to_delete.delete()
+        return DeletePost(
+            ok=True
+        )
 
 # Category mutations ==================
 class Mutation(graphene.ObjectType):
     create_post = CreatePost.Field()
     update_post = UpdatePost.Field()
+    delete_post = DeletePost.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
