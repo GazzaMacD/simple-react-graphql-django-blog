@@ -13,6 +13,7 @@ class PostAdmin(admin.ModelAdmin):
             "fields": (
                 "title",
                 ("slug", "uuid"),
+                "image",
                 "content",
                 "category"
                 ),

@@ -14,7 +14,14 @@ class CategoryType(DjangoObjectType):
 class PostType(DjangoObjectType):
     class Meta:
         model = Post 
-        fields = ("uuid", "title", "slug", "content", "category")
+        fields = ("uuid", "title", "slug", "content", "category", "image")
+
+    def resolve_image(self, info):
+        if self.image:
+            return self.image.url
+        else: 
+            return ""
+
 
 """
 Queries

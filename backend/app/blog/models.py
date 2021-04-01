@@ -100,6 +100,11 @@ class Post(models.Model):
             "Auto generated and unique"
         )
     )
+    image = models.ImageField(
+        upload_to="blog/",
+        null=False,
+        blank=True
+    )
     content = models.TextField(
         _("Content"),
         null=False,
