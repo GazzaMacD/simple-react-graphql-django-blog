@@ -26,6 +26,7 @@ const PostCreateOrUpdate: React.FC = () => {
     const [postToUpdate, setPostToUpdate] = useState<PostType | undefined>(
         undefined
     );
+    const [headerImage, setHeaderImage] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [userMessage, setUserMessage] = useState<string>("");
 
@@ -157,6 +158,13 @@ const PostCreateOrUpdate: React.FC = () => {
         } //end else for postToUpdate
     };
 
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.currentTarget.files) {
+            const file: File = e.currentTarget.files[0];
+            setHeaderImage(file);
+        }
+    };
+
     // Utility Functions
     const flashMessage = (msg: string, time: number) => {
         setUserMessage(msg);
@@ -190,6 +198,16 @@ const PostCreateOrUpdate: React.FC = () => {
                     <div>
                         <label htmlFor="title">Title</label>
                         <input id="title" type="text" ref={titleInputRef} />
+                    </div>
+                    <div>
+                        <label htmlFor="headimage">Header Image</label>
+                        <input
+                            name="headimage"
+                            id="headimage"
+                            required
+                            type="file"
+                            onChange={(e) => handleImageChange(e)}
+                        />
                     </div>
                     <div>
                         <label htmlFor="content">Content</label>
