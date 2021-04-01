@@ -5,6 +5,7 @@ import {
     getPosts,
     getOnePost,
     updatePost,
+    deletePost,
 } from "./BlogAPIServices";
 //types
 import {
@@ -84,6 +85,27 @@ const PostCreateOrUpdate: React.FC = () => {
 
     const handlePostDelete = async (slug: string) => {
         console.log("slug passed", slug);
+        // get the post to be updated with api call
+        try {
+            const deletePostResponse: boolean | undefined = await deletePost(
+                slug
+            );
+            if (!deletePostResponse) {
+                flashMessage("Post not deleted", 1000);
+                return;
+            }
+            flashMessage("Post deleted", 1000);
+            try {
+                const postsResponse = await getPosts();
+                if (postsResponse) {
+                    setPosts(postsResponse);
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     const submitHandler = async (event: React.FormEvent) => {
@@ -101,10 +123,7 @@ const PostCreateOrUpdate: React.FC = () => {
             try {
                 const response = await updatePost(updatePostData);
                 setPostToUpdate(response);
-                setUserMessage("updated!");
-                setTimeout(() => {
-                    setUserMessage("");
-                }, 1000);
+                flashMessage("Post Updated!", 1000);
                 const postsResponse = await getPosts();
                 if (postsResponse) {
                     setPosts(postsResponse);
@@ -122,10 +141,7 @@ const PostCreateOrUpdate: React.FC = () => {
             try {
                 const response = await sendNewPost(newPostData);
                 // set flash message to user
-                setUserMessage("New Post Created!");
-                setTimeout(() => {
-                    setUserMessage("");
-                }, 1000);
+                flashMessage("New Post Created!", 1000);
                 // set form fields to empty
                 titleInputRef.current!.value = "";
                 contentInputRef.current!.value = "";
@@ -140,6 +156,16 @@ const PostCreateOrUpdate: React.FC = () => {
             }
         } //end else for postToUpdate
     };
+
+    // Utility Functions
+    const flashMessage = (msg: string, time: number) => {
+        setUserMessage(msg);
+        setTimeout(() => {
+            setUserMessage("");
+        }, time);
+    };
+
+    // Conditional rendering
     let formHeading = (
         <div>
             <h1>Create Post</h1>
@@ -153,6 +179,7 @@ const PostCreateOrUpdate: React.FC = () => {
             </div>
         );
     }
+
     /* Returned jsx =================================== */
     return (
         <div>
@@ -194,18 +221,24 @@ const PostCreateOrUpdate: React.FC = () => {
                 {isLoading && <p>Wait I'm Loading comments for you</p>}
                 {
                     !isLoading &&
-                        posts.map((prod: AllPostsType, i: number) => {
+                        posts.map((post: AllPostsType, i: number) => {
                             return (
                                 <div key={i}>
-                                    <a href={`/blog/${prod.slug}/`}>
-                                        {prod.title}
+                                    <a href={`/blog/${post.slug}/`}>
+                                        {post.title}
                                     </a>
                                     <button
-                                        onClick={() => handleUpdate(prod.slug)}
+                                        onClick={() => handleUpdate(post.slug)}
                                     >
                                         update
                                     </button>
-                                    <button>delete</button>
+                                    <button
+                                        onClick={() =>
+                                            handlePostDelete(post.slug)
+                                        }
+                                    >
+                                        delete
+                                    </button>
                                 </div>
                             );
                         }) // end map

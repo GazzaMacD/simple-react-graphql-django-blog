@@ -19,9 +19,7 @@ const App = () => {
                             <Link to="/blog/">Blog</Link>
                         </li>
                         <li>
-                            <Link to="/dashboard/blog/edit-post">
-                                Edit Post
-                            </Link>
+                            <Link to="/dashboard/blog/">Edit Post</Link>
                         </li>
                     </ul>
                     <hr />
@@ -33,7 +31,7 @@ const App = () => {
                             <Posts />
                         </Route>
                         <Route path="/blog/:slug" children={<PostDetail />} />
-                        <Route exact path="/dashboard/blog/edit-post">
+                        <Route exact path="/dashboard/blog/">
                             <PostCreateOrUpdate />
                         </Route>
                     </Switch>

@@ -25,3 +25,7 @@ export type NewSubmittedPost = {
 export interface UpdateSubmittedPost extends NewSubmittedPost {
     slug: string;
 }
+
+export interface DeletePostArg {
+    slug: string;
+}

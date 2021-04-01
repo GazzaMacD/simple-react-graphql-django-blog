@@ -228,6 +228,48 @@ const updatePost = async (
         );
         return Promise.reject(error);
     }
-}; // end sendNew Post
+}; // end updatePost
 
-export { sendNewPost, getCategories, getPosts, getOnePost, updatePost };
+const deletePost = async (slug: string): Promise<boolean | undefined> => {
+    const graphQLURL = "http://127.0.0.1:8000/graphql/";
+    const deletePostMutation = `
+            mutation {
+                deletePost(slug: "${slug}") { ok }
+        }
+        `;
+    const response = await fetch(graphQLURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: deletePostMutation }),
+    });
+
+    type JSONResponse = {
+        data?: {
+            deletePost?: {
+                ok?: boolean;
+            };
+        };
+        errors?: Array<{ message: string }>;
+    };
+
+    const { data, errors }: JSONResponse = await response.json();
+    if (response.ok) {
+        const updatedPost = data?.deletePost?.ok;
+        return updatedPost;
+    } else {
+        // handle graphql errors
+        const error = new Error(
+            errors?.map((e) => e.message).join("\n") ?? "unknown"
+        );
+        return Promise.reject(error);
+    }
+}; // end deletePost
+
+export {
+    sendNewPost,
+    getCategories,
+    getPosts,
+    getOnePost,
+    updatePost,
+    deletePost,
+};
