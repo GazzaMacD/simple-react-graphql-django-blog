@@ -18,6 +18,8 @@ parts
 src/*.egg-info
 .vscode/
 backend_project_files/
+media/
+
 # My Dev Settings - keep out of repo
 my_dev_settings.py
 

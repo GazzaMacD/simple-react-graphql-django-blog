@@ -26,7 +26,7 @@ const PostCreateOrUpdate: React.FC = () => {
     const [postToUpdate, setPostToUpdate] = useState<PostType | undefined>(
         undefined
     );
-    const [headerImage, setHeaderImage] = useState<File | null>(null);
+    const [headerImage, setHeaderImage] = useState<string | Blob>("");
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [userMessage, setUserMessage] = useState<string>("");
 
@@ -134,13 +134,15 @@ const PostCreateOrUpdate: React.FC = () => {
             }
         } else {
             // new post
+            const data = new FormData();
+            data.append("image", headerImage);
             const newPostData: NewSubmittedPost = {
                 title: titleInputRef.current!.value,
                 content: contentInputRef.current!.value,
                 categoryUuid: categoryInputRef.current!.value,
             };
             try {
-                const response = await sendNewPost(newPostData);
+                const response = await sendNewPost(newPostData, data);
                 // set flash message to user
                 flashMessage("New Post Created!", 1000);
                 // set form fields to empty
@@ -160,7 +162,7 @@ const PostCreateOrUpdate: React.FC = () => {
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.currentTarget.files) {
-            const file: File = e.currentTarget.files[0];
+            const file: Blob = e.currentTarget.files[0];
             setHeaderImage(file);
         }
     };

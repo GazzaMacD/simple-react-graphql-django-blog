@@ -132,7 +132,8 @@ const getCategories = async (): Promise<getCategoriesData | undefined> => {
  * Mutation Type Queries
  */
 const sendNewPost = async (
-    postData: NewSubmittedPost
+    postData: NewSubmittedPost,
+    formDataObj: any
 ): Promise<AllPostsType | undefined> => {
     const graphQLURL = "http://127.0.0.1:8000/graphql/";
     const newPostMutation = `
@@ -148,11 +149,19 @@ const sendNewPost = async (
                 }
             }
         }
-        `;
-    const response = await fetch(graphQLURL, {
+    `;
+    formDataObj.append("query", newPostMutation);
+
+    let response = await fetch(graphQLURL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: newPostMutation }),
+        headers: {
+            "Content-Tranfer-Encoding": "multipart/form-data",
+            "Content-Type": "application/graphql",
+        },
+        body: formDataObj,
+
+        //headers: { "Content-Type": "application/json" },
+        //body: JSON.stringify({ query: newPostMutation }),
     });
 
     type JSONResponse = {

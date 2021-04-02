@@ -1,5 +1,6 @@
 import graphene
 from graphene_django import DjangoObjectType
+from graphene_file_upload.scalars import Upload
 
 from blog.models import Category, Post
 
@@ -140,6 +141,7 @@ class CreatePost(graphene.Mutation):
     post = graphene.Field(PostType)
 
     def mutate(self, info, title, content, category_uuid):
+        print("info", info)
         category_object = Category.objects.get(uuid=category_uuid)
         created_post = Post.objects.create(
                 title=title,

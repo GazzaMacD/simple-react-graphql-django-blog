@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'graphene_django',
     'corsheaders',
     'blog'
@@ -67,9 +68,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'app_django.wsgi.application'
 
-
-
-
+# Django REST 
+## NOT SAFE FOR PRODUCTION _ CHANGE TO 'rest_framework.permissions.IsAuthenticated',
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ]
+}
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
