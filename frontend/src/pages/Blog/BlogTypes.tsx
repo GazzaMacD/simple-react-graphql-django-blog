@@ -1,11 +1,12 @@
 export interface CategoryType {
     uuid: string;
-    name: string;
-    slug: string;
+    name?: string;
+    slug?: string;
 }
 export type PostType = {
     uuid: string;
     title: string;
+    image: string;
     slug: string;
     content: string;
     category: CategoryType;

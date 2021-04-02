@@ -6,6 +6,7 @@ import {
     getOnePost,
     updatePost,
     deletePost,
+    apiUpdatePost,
 } from "./BlogAPIServices";
 //types
 import {
@@ -111,17 +112,16 @@ const PostCreateOrUpdate: React.FC = () => {
     const submitHandler = async (event: React.FormEvent) => {
         event.preventDefault();
         // check if it is update or new post
+        const data: FormData = new FormData();
         if (postToUpdate) {
             // post update
-            const updatePostData: UpdateSubmittedPost = {
-                slug: postToUpdate.slug,
-                title: titleInputRef.current!.value,
-                content: contentInputRef.current!.value,
-                categoryUuid: categoryInputRef.current!.value,
-            };
+            data.append("title", titleInputRef.current!.value);
+            data.append("image", headerImage);
+            data.append("content", contentInputRef.current!.value);
+            data.append("category", categoryInputRef.current!.value);
 
             try {
-                const response = await updatePost(updatePostData);
+                const response = await apiUpdatePost(data, postToUpdate.slug);
                 setPostToUpdate(response);
                 flashMessage("Post Updated!", 1000);
                 const postsResponse = await getPosts();
@@ -133,7 +133,6 @@ const PostCreateOrUpdate: React.FC = () => {
             }
         } else {
             // new post
-            const data = new FormData();
             data.append("title", titleInputRef.current!.value);
             data.append("image", headerImage);
             data.append("content", contentInputRef.current!.value);

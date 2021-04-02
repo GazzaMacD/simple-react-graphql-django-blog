@@ -55,6 +55,7 @@ const getOnePost = async (slug: string): Promise<PostType | undefined> => {
         postBySlug(slug: "${slug}") {
           uuid
           title
+          image
           slug
           content
           category {
@@ -298,11 +299,11 @@ const createNewPost = async (
         content: string;
         category: string;
     };
-    const fromResponse: JSONResponse = await response.json();
+    const responseJSON: JSONResponse = await response.json();
     if (response.ok) {
         const createdPost: AllPostsType = {
-            title: fromResponse.title,
-            slug: fromResponse.slug,
+            title: responseJSON.title,
+            slug: responseJSON.slug,
         };
         return createdPost;
     } else {
@@ -311,6 +312,48 @@ const createNewPost = async (
         return Promise.reject(error);
     }
 }; // end sendNew Post
+
+const apiUpdatePost = async (
+    formDataObj: FormData,
+    slug: string
+): Promise<PostType | undefined> => {
+    const apiUrl = `http://127.0.0.1:8000/api/v1/blog/${slug}/`;
+
+    let response = await fetch(apiUrl, {
+        method: "PUT",
+        headers: {
+            "Content-Tranfer-Encoding": "multipart/form-data",
+        },
+        body: formDataObj,
+    });
+    type JSONResponse = {
+        uuid: string;
+        title: string;
+        slug: string;
+        image: string;
+        content: string;
+        category: string;
+    };
+    const responseJSON: JSONResponse = await response.json();
+    if (response.ok) {
+        const updatedPost: PostType = {
+            uuid: responseJSON.uuid,
+            title: responseJSON.title,
+            slug: responseJSON.slug,
+            image: responseJSON.image,
+            content: responseJSON.content,
+            category: {
+                uuid: responseJSON.category,
+            },
+        };
+        return updatedPost;
+    } else {
+        // handle graphql errors
+        const error = new Error(`Error with status code of ${response.status}`);
+        return Promise.reject(error);
+    }
+}; // end sendNew Post
+
 export {
     sendNewPost,
     createNewPost,
@@ -319,4 +362,5 @@ export {
     getOnePost,
     updatePost,
     deletePost,
+    apiUpdatePost,
 };
