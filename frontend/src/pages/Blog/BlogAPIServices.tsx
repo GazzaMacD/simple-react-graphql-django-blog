@@ -131,6 +131,7 @@ const getCategories = async (): Promise<getCategoriesData | undefined> => {
 /*
  * Mutation Type Queries
  */
+
 const sendNewPost = async (
     postData: NewSubmittedPost,
     formDataObj: any
@@ -274,8 +275,45 @@ const deletePost = async (slug: string): Promise<boolean | undefined> => {
     }
 }; // end deletePost
 
+/*
+ * REST api functions
+ */
+const createNewPost = async (
+    formDataObj: FormData
+): Promise<AllPostsType | undefined> => {
+    const apiUrl = "http://127.0.0.1:8000/api/v1/blog/";
+
+    let response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+            "Content-Tranfer-Encoding": "multipart/form-data",
+        },
+        body: formDataObj,
+    });
+    type JSONResponse = {
+        uuid: string;
+        title: string;
+        slug: string;
+        image: string;
+        content: string;
+        category: string;
+    };
+    const fromResponse: JSONResponse = await response.json();
+    if (response.ok) {
+        const createdPost: AllPostsType = {
+            title: fromResponse.title,
+            slug: fromResponse.slug,
+        };
+        return createdPost;
+    } else {
+        // handle graphql errors
+        const error = new Error(`Error with status code of ${response.status}`);
+        return Promise.reject(error);
+    }
+}; // end sendNew Post
 export {
     sendNewPost,
+    createNewPost,
     getCategories,
     getPosts,
     getOnePost,

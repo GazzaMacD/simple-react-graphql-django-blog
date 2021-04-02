@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
-    sendNewPost,
+    createNewPost,
     getCategories,
     getPosts,
     getOnePost,
@@ -12,7 +12,6 @@ import {
     CategoryType,
     AllPostsType,
     PostType,
-    NewSubmittedPost,
     UpdateSubmittedPost,
 } from "./BlogTypes";
 
@@ -20,6 +19,7 @@ const PostCreateOrUpdate: React.FC = () => {
     const titleInputRef = useRef<HTMLInputElement>(null);
     const contentInputRef = useRef<HTMLTextAreaElement>(null);
     const categoryInputRef = useRef<HTMLSelectElement>(null);
+    const imageInputRef = useRef<HTMLInputElement>(null);
     // state
     const [categories, setCategories] = useState<Array<CategoryType> | []>([]);
     const [posts, setPosts] = useState<Array<AllPostsType> | []>([]);
@@ -85,7 +85,6 @@ const PostCreateOrUpdate: React.FC = () => {
     };
 
     const handlePostDelete = async (slug: string) => {
-        console.log("slug passed", slug);
         // get the post to be updated with api call
         try {
             const deletePostResponse: boolean | undefined = await deletePost(
@@ -135,20 +134,20 @@ const PostCreateOrUpdate: React.FC = () => {
         } else {
             // new post
             const data = new FormData();
+            data.append("title", titleInputRef.current!.value);
             data.append("image", headerImage);
-            const newPostData: NewSubmittedPost = {
-                title: titleInputRef.current!.value,
-                content: contentInputRef.current!.value,
-                categoryUuid: categoryInputRef.current!.value,
-            };
+            data.append("content", contentInputRef.current!.value);
+            data.append("category", categoryInputRef.current!.value);
             try {
-                const response = await sendNewPost(newPostData, data);
+                const response = await createNewPost(data);
                 // set flash message to user
                 flashMessage("New Post Created!", 1000);
                 // set form fields to empty
                 titleInputRef.current!.value = "";
                 contentInputRef.current!.value = "";
                 categoryInputRef.current!.value = "";
+                imageInputRef.current!.value = "";
+                /* clear image data */
                 const updatedPostsArray = posts.slice();
                 if (response) {
                     updatedPostsArray.push(response);
@@ -206,8 +205,8 @@ const PostCreateOrUpdate: React.FC = () => {
                         <input
                             name="headimage"
                             id="headimage"
-                            required
                             type="file"
+                            ref={imageInputRef}
                             onChange={(e) => handleImageChange(e)}
                         />
                     </div>
