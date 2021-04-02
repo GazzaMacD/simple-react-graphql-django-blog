@@ -13,6 +13,32 @@ from blog.api.serializers import (
 )
 
 
+class PostUpdateAPIView(APIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    # Need to change for when auth implemented 
+    permission_classes = (AllowAny,)
+
+    def get_object(self, slug):
+        post = get_object_or_404(Post, slug=slug)
+        return post 
+
+    def put(self,request, slug):
+        post = self.get_object(slug)
+        serializer = PostSerializer(post, data=request.data)
+    
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                serializer.data,
+            )
+        else:
+            return Response(
+                serializer.error_messages,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
 class PostCreateAPIView(APIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer

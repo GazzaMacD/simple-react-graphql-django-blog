@@ -8,7 +8,7 @@ class PostSerializer(serializers.ModelSerializer):
         queryset=Category.objects.all(),
         slug_field='uuid'
         )
-    image = serializers.ImageField(max_length=None, use_url=True, required=True)
+    image = serializers.ImageField(max_length=None, use_url=True, required=False)
 
     class Meta:
         model = Post 
@@ -22,9 +22,7 @@ class PostSerializer(serializers.ModelSerializer):
             'category', 
         ) 
     def create(self, validated_data):
-        print("data", validated_data)
         category = validated_data.pop('category', None)
-        print("Category", category.uuid)
         try: 
             category_object = Category.objects.get(uuid=category.uuid)
         except Category.DoesNotExist:
@@ -38,12 +36,13 @@ class PostSerializer(serializers.ModelSerializer):
         print('Category', category)
         print('Instance uuid', instance.uuid)
         instance.title = validated_data.get('title', instance.title)
-        instance.content = validated_data.get('content', instance.first_name)
+        instance.content = validated_data.get('content', instance.content)
         instance.image = validated_data.get('image', instance.image)
         try: 
             category_object = Category.objects.get(uuid=category.uuid)
         except Category.DoesNotExist:
-            instance.save() 
+            raise serializers.ValidationError
         instance.category = category_object or instance.category
+        instance.save()
         return instance
 
