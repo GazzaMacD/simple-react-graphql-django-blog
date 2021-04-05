@@ -31,12 +31,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users',
     'authtools', 
     'rest_framework',
     'graphene_django',
     'corsheaders',
-    'blog'
+    'blog.apps.BlogConfig',
+    'core.apps.CoreConfig',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
