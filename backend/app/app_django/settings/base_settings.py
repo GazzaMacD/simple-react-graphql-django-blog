@@ -31,6 +31,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users',
+    'authtools', 
     'rest_framework',
     'graphene_django',
     'corsheaders',
@@ -114,3 +116,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 # Media url here but media root depends on dev or production so in those settings
 MEDIA_URL = '/media/'
+
+AUTH_USER_MODEL = 'users.User'
