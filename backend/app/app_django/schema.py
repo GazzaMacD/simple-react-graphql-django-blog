@@ -1,8 +1,10 @@
 import graphene
+import graphql_jwt
 from graphene_django import DjangoObjectType
 from graphene_file_upload.scalars import Upload
 
 from blog.models import Category, Post
+from users.models import User 
 
 """
 Types with DjangoObjectTypes
@@ -23,12 +25,19 @@ class PostType(DjangoObjectType):
         else: 
             return ""
 
+class UserType(DjangoObjectType):
+    class Meta:
+        model = User
+        fields = ("uuid", "email")
 
 """
 Queries
 """
 
 class Query(graphene.ObjectType):
+    viewer = graphene.Field(
+        UserType
+    )
     all_posts = graphene.List(
         PostType
     )
@@ -51,6 +60,13 @@ class Query(graphene.ObjectType):
         CategoryType,
         uuid=graphene.String(required=True)
     )
+    # User query resolvers ==================
+    def resolve_viewer(self, info, **kwargs):
+        user = info.context.user
+        if not user.is_authenticated:
+            raise Exception('Authentication credentials were not provided')
+        return user
+
     # Post query resolvers ==================
     def resolve_all_posts(root, info):
         return Post.objects.select_related("category").all()
@@ -179,6 +195,10 @@ class Mutation(graphene.ObjectType):
     create_post = CreatePost.Field()
     update_post = UpdatePost.Field()
     delete_post = DeletePost.Field()
-
+    # jwt cookies
+    token_auth = graphql_jwt.ObtainJSONWebToken.Field()
+    verify_token = graphql_jwt.Verify.Field()
+    refresh_token = graphql_jwt.Refresh.Field()
+    delete_token_cookie = graphql_jwt.DeleteJSONWebTokenCookie.Field()
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

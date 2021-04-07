@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'app_django.wsgi.application'
 ## NOT SAFE FOR PRODUCTION _ CHANGE TO 'rest_framework.permissions.IsAuthenticated',
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAdminUser',
     ]
 }
 # Password validation
@@ -117,5 +117,17 @@ USE_TZ = True
 STATIC_URL = '/static/'
 # Media url here but media root depends on dev or production so in those settings
 MEDIA_URL = '/media/'
+
+#JWT
+
+GRAPHENE = {
+    'MIDDLEWARE': [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ],
+}
+AUTHENTICATION_BACKENDS = [
+    'graphql_jwt.backends.JSONWebTokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 AUTH_USER_MODEL = 'users.User'
