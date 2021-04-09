@@ -9,11 +9,17 @@ import {
 type getCategoriesData = Array<CategoryType>;
 type getPostsData = Array<AllPostsType>;
 
+// dev baseUrl
+const baseURL = "http://127.0.0.1:8000";
+
+// staging baseUrl
+//const baseURL = "http://api.sportify.life";
+
 /*
  * Query Type Queries
  */
 const getPosts = async (): Promise<getPostsData | undefined> => {
-    const graphQLURL = "http://127.0.0.1:8000/graphql/";
+    const graphQLURL = baseURL + "/graphql/";
     const allPostsQuery = `
       query {
         allPosts {
@@ -49,7 +55,7 @@ const getPosts = async (): Promise<getPostsData | undefined> => {
 }; // end getPosts
 
 const getOnePost = async (slug: string): Promise<PostType | undefined> => {
-    const graphQLURL = "http://127.0.0.1:8000/graphql/";
+    const graphQLURL = baseURL + "/graphql/";
     const onePostQuery = `
       query {
         postBySlug(slug: "${slug}") {
@@ -93,7 +99,7 @@ const getOnePost = async (slug: string): Promise<PostType | undefined> => {
 }; // end getOnePost
 
 const getCategories = async (): Promise<getCategoriesData | undefined> => {
-    const graphQLURL = "http://127.0.0.1:8000/graphql/";
+    const graphQLURL = baseURL + "/graphql/";
     const allCategoriesQuery = `
       query {
         allCategories {
@@ -137,7 +143,7 @@ const sendNewPost = async (
     postData: NewSubmittedPost,
     formDataObj: any
 ): Promise<AllPostsType | undefined> => {
-    const graphQLURL = "http://127.0.0.1:8000/graphql/";
+    const graphQLURL = baseURL + "/graphql/";
     const newPostMutation = `
             mutation {
                 createPost(
@@ -191,7 +197,7 @@ const sendNewPost = async (
 const updatePost = async (
     postData: UpdateSubmittedPost
 ): Promise<PostType | undefined> => {
-    const graphQLURL = "http://127.0.0.1:8000/graphql/";
+    const graphQLURL = baseURL + "/graphql/";
     const updatePostMutation = `
             mutation {
                 updatePost(
@@ -242,7 +248,7 @@ const updatePost = async (
 }; // end updatePost
 
 const deletePost = async (slug: string): Promise<boolean | undefined> => {
-    const graphQLURL = "http://127.0.0.1:8000/graphql/";
+    const graphQLURL = baseURL + "/graphql/";
     const deletePostMutation = `
             mutation {
                 deletePost(slug: "${slug}") { ok }
@@ -282,7 +288,7 @@ const deletePost = async (slug: string): Promise<boolean | undefined> => {
 const createNewPost = async (
     formDataObj: FormData
 ): Promise<AllPostsType | undefined> => {
-    const apiUrl = "http://127.0.0.1:8000/api/v1/blog/";
+    const apiUrl = baseURL + "/api/v1/blog/";
 
     let response = await fetch(apiUrl, {
         method: "POST",
@@ -317,7 +323,7 @@ const apiUpdatePost = async (
     formDataObj: FormData,
     slug: string
 ): Promise<PostType | undefined> => {
-    const apiUrl = `http://127.0.0.1:8000/api/v1/blog/${slug}/`;
+    const apiUrl = baseURL + `/api/v1/blog/${slug}/`;
 
     let response = await fetch(apiUrl, {
         method: "PUT",

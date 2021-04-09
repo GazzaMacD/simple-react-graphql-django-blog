@@ -27,9 +27,10 @@ admin.site.index_title = 'Administration Home'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('dj_rest_auth.urls')),
     path(
         "graphql/", 
-        jwt_cookie(GraphQLView.as_view(graphiql=True, schema=schema))
+        jwt_cookie(csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema)))
         ),
     path(
         "api/v1/blog/", 

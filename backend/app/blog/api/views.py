@@ -17,7 +17,7 @@ class PostUpdateAPIView(APIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     # Need to change for when auth implemented 
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated)
 
     def get_object(self, slug):
         post = get_object_or_404(Post, slug=slug)
