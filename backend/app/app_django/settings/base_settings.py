@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
-
+from datetime import timedelta
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -33,6 +33,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authtools', 
     'rest_framework',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
     'graphene_django',
     'corsheaders',
     'blog.apps.BlogConfig',
@@ -74,8 +76,11 @@ WSGI_APPLICATION = 'app_django.wsgi.application'
 # Django REST 
 ## NOT SAFE FOR PRODUCTION _ CHANGE TO 'rest_framework.permissions.IsAuthenticated',
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+    ),
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAdminUser',
     ]
 }
 # Password validation
@@ -121,4 +126,34 @@ STATIC_URL = '/static/'
 # ****IMPORTANT -  Media url here but media root depends on dev or production so in those settings
 MEDIA_URL = '/media/'
 
+#JWT
+
+GRAPHENE = {
+    'MIDDLEWARE': [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ],
+}
+AUTHENTICATION_BACKENDS = [
+    'graphql_jwt.backends.JSONWebTokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+# all auth settings
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'users.api.serializers.CustomUserDetailsSerializer',
+}
+#jwt settings
+REST_USE_JWT = True
+JWT_AUTH_COOKIE = 'YihOnnZNLKUjTxc'
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
+}
+
+# Register custom user model
 AUTH_USER_MODEL = 'users.User'

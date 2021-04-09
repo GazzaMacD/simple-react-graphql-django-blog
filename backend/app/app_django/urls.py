@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.decorators.csrf import csrf_exempt
 
-
+from graphql_jwt.decorators import jwt_cookie
 from graphene_django.views import GraphQLView
 from .schema import schema
 
@@ -27,9 +27,10 @@ admin.site.index_title = 'Administration Home'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('dj_rest_auth.urls')),
     path(
         "graphql/", 
-        csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))
+        jwt_cookie(csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema)))
         ),
     path(
         "api/v1/blog/", 
