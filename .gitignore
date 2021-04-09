@@ -22,8 +22,9 @@ media/
 
 # My Dev Settings - keep out of repo
 my_dev_settings.py
+# Staging 
 stag_settings.py
-
+backend/static/
 # Frontend & Dashboard
 # dependencies
 node_modules/

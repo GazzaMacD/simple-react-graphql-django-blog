@@ -114,8 +114,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+# ****IMPORTANT - Set static root in the prod, stag or dev folders
 STATIC_URL = '/static/'
-# Media url here but media root depends on dev or production so in those settings
+
+
+# ****IMPORTANT -  Media url here but media root depends on dev or production so in those settings
 MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL = 'users.User'
