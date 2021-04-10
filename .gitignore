@@ -49,3 +49,6 @@ dashboard_project_files/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# vercel
+.vercel
