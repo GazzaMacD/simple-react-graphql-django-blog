@@ -1,16 +1,14 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, Text, View, SafeAreaView } from "react-native";
-
+import { Home } from "./pages/Home";
 import { ColorBox } from "./components/elements/ColorBox";
 
 const App: React.FC = (): React.ReactElement => {
     return (
         <SafeAreaView style={styles.container}>
             <View>
-                <Text style={styles.heading}>Simple Blog</Text>
-                <Text>More Text Here</Text>
-                <ColorBox colorName="Black" backColor="#000" color="#fff" />
+                <Home />
                 <StatusBar style="auto" />
             </View>
         </SafeAreaView>
