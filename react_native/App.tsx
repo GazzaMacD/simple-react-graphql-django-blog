@@ -22,9 +22,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
     },
-    heading: {
-        fontSize: 20,
-    },
 });
 
 export default App;
