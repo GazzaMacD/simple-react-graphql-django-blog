@@ -1,8 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, SafeAreaView } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { StyleSheet, Text, View, SafeAreaView, FlatList } from "react-native";
 import { getPosts } from "./apiServices";
 import { IAllPosts } from "./types";
 import { ColorBox } from "../../components/elements/ColorBox";
+
+const ListItem: React.FC<IAllPosts> = ({ title, slug }): React.ReactElement => {
+    return (
+        <View>
+            <Text>{title}</Text>
+        </View>
+    );
+};
 
 const Home: React.FC = (): React.ReactElement => {
     const [posts, setPosts] = useState<Array<IAllPosts> | []>([]);
@@ -14,6 +22,7 @@ const Home: React.FC = (): React.ReactElement => {
             .then((resp: any) => {
                 setPosts(resp);
                 setIsLoading(false);
+                console.log("success");
             })
             .catch((err) => {
                 console.error(err);
@@ -24,6 +33,17 @@ const Home: React.FC = (): React.ReactElement => {
         <SafeAreaView style={styles.container}>
             <View>
                 <Text style={styles.heading}>Simple Blog Home</Text>
+                {isLoading && <Text>Wait I'm Loading comments for you</Text>}
+                {!isLoading && (
+                    <FlatList
+                        data={posts}
+                        keyExtractor={(item) => item.slug}
+                        renderItem={({ item }) => (
+                            <ListItem title={item.title} slug={item.slug} />
+                        )}
+                    />
+                )}
+
                 <ColorBox colorName="Black" backColor="#000" color="#fff" />
             </View>
         </SafeAreaView>

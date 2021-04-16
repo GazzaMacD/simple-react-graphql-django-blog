@@ -4,7 +4,9 @@ import { IAllPosts, TQuery } from "./types";
 type getPostsData = Array<IAllPosts>;
 
 // dev baseUrl
-const baseURL = "http://127.0.0.1:8000";
+//const baseURL = "http://127.0.0.1:8000";
+//mobile dev baseUrl
+const baseURL = "http://192.168.1.68:8000";
 // staging baseUrl
 //const baseURL = "http://api.sportify.life";
 
