@@ -1,15 +1,18 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
 import { StyleSheet, Text, View, SafeAreaView } from "react-native";
-import { Home } from "./pages/Home";
-import { ColorBox } from "./components/elements/ColorBox";
+
+import { Home } from "./screens/Home";
 
 const App: React.FC = (): React.ReactElement => {
     return (
-        <SafeAreaView style={styles.container}>
-            <Home />
-            <StatusBar style="auto" />
-        </SafeAreaView>
+        <NavigationContainer>
+            <SafeAreaView style={styles.container}>
+                <Home />
+                <StatusBar style="auto" />
+            </SafeAreaView>
+        </NavigationContainer>
     );
 };
 
