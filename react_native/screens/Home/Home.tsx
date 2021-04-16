@@ -1,9 +1,20 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text, View, SafeAreaView, FlatList } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import {
+    StyleSheet,
+    Text,
+    View,
+    SafeAreaView,
+    FlatList,
+    TouchableOpacity,
+} from "react-native";
+import { StackNavigationProp } from "@react-navigation/stack";
+
 import { getPosts } from "./apiServices";
 import { IAllPosts } from "./types";
 import { ColorBox } from "../../components/elements/ColorBox";
 
+interface ListItemProps {}
 const ListItem: React.FC<IAllPosts> = ({ title, slug }): React.ReactElement => {
     return (
         <View>
@@ -12,7 +23,7 @@ const ListItem: React.FC<IAllPosts> = ({ title, slug }): React.ReactElement => {
     );
 };
 
-const Home: React.FC = (): React.ReactElement => {
+const Home: React.FC = (props): React.ReactElement => {
     const [posts, setPosts] = useState<Array<IAllPosts> | []>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -30,7 +41,7 @@ const Home: React.FC = (): React.ReactElement => {
     }, []); // end useEffect
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Text style={styles.heading}>Simple Blog Home</Text>
             {isLoading && <Text>Wait I'm Loading comments for you</Text>}
             {!isLoading && (
@@ -38,13 +49,19 @@ const Home: React.FC = (): React.ReactElement => {
                     data={posts}
                     keyExtractor={(item) => item.slug}
                     renderItem={({ item }) => (
-                        <ListItem title={item.title} slug={item.slug} />
+                        <TouchableOpacity
+                            onPress={() => {
+                                props.navigation.navigate("BlogDetail");
+                            }}
+                        >
+                            <ListItem title={item.title} slug={item.slug} />
+                        </TouchableOpacity>
                     )}
                 />
             )}
-
             <ColorBox colorName="Black" backColor="#000" color="#fff" />
-        </View>
+            <StatusBar style="auto" />
+        </SafeAreaView>
     );
 };
 
