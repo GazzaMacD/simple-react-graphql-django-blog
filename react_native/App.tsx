@@ -7,10 +7,8 @@ import { ColorBox } from "./components/elements/ColorBox";
 const App: React.FC = (): React.ReactElement => {
     return (
         <SafeAreaView style={styles.container}>
-            <View>
-                <Home />
-                <StatusBar style="auto" />
-            </View>
+            <Home />
+            <StatusBar style="auto" />
         </SafeAreaView>
     );
 };

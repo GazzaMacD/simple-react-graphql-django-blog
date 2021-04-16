@@ -30,23 +30,21 @@ const Home: React.FC = (): React.ReactElement => {
     }, []); // end useEffect
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View>
-                <Text style={styles.heading}>Simple Blog Home</Text>
-                {isLoading && <Text>Wait I'm Loading comments for you</Text>}
-                {!isLoading && (
-                    <FlatList
-                        data={posts}
-                        keyExtractor={(item) => item.slug}
-                        renderItem={({ item }) => (
-                            <ListItem title={item.title} slug={item.slug} />
-                        )}
-                    />
-                )}
+        <View style={styles.container}>
+            <Text style={styles.heading}>Simple Blog Home</Text>
+            {isLoading && <Text>Wait I'm Loading comments for you</Text>}
+            {!isLoading && (
+                <FlatList
+                    data={posts}
+                    keyExtractor={(item) => item.slug}
+                    renderItem={({ item }) => (
+                        <ListItem title={item.title} slug={item.slug} />
+                    )}
+                />
+            )}
 
-                <ColorBox colorName="Black" backColor="#000" color="#fff" />
-            </View>
-        </SafeAreaView>
+            <ColorBox colorName="Black" backColor="#000" color="#fff" />
+        </View>
     );
 };
 
