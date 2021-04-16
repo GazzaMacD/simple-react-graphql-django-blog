@@ -9,10 +9,17 @@ import {
     TouchableOpacity,
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../../appTypes";
 
 import { getPosts } from "./apiServices";
 import { IAllPosts } from "./types";
 import { ColorBox } from "../../components/elements/ColorBox";
+
+//types
+type DetailPageNavProp = StackNavigationProp<RootStackParamList, "BlogDetail">;
+type Props = {
+    navigation: DetailPageNavProp;
+};
 
 interface ListItemProps {}
 const ListItem: React.FC<IAllPosts> = ({ title, slug }): React.ReactElement => {
@@ -23,7 +30,7 @@ const ListItem: React.FC<IAllPosts> = ({ title, slug }): React.ReactElement => {
     );
 };
 
-const Home: React.FC = (props): React.ReactElement => {
+const Home: React.FC<Props> = ({ navigation }): React.ReactElement => {
     const [posts, setPosts] = useState<Array<IAllPosts> | []>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -51,7 +58,7 @@ const Home: React.FC = (props): React.ReactElement => {
                     renderItem={({ item }) => (
                         <TouchableOpacity
                             onPress={() => {
-                                props.navigation.navigate("BlogDetail");
+                                navigation.navigate("BlogDetail");
                             }}
                         >
                             <ListItem title={item.title} slug={item.slug} />
